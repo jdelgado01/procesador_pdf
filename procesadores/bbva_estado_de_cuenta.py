@@ -207,8 +207,19 @@ def procesar_documento(pdf_bytes):
     df_cuotas["Tasa de cuota"] = df_cuotas["Tasa de cuota"].str.replace("%%", "%", regex=False)
 
     # Output igual al notebook: sin fila en blanco, columnas ordenadas
-    return {
+    output = {
         'Resumen': df_general.reset_index(drop=True),
         'Movimientos': df_montos.reset_index(drop=True),
         'Cuotas': df_cuotas.reset_index(drop=True)
     }
+
+    # Guardar los DataFrames en un archivo Excel con los movimientos debajo del resumen en la misma hoja
+    ruta_excel = r"C:\Users\jdelgado\Desktop\python\estadoBBVA.xlsx"
+    with pd.ExcelWriter(ruta_excel, engine='openpyxl') as writer:
+        output['Resumen'].to_excel(writer, sheet_name='Resumen', startrow=0, index=False)
+        startrow_movimiento = len(output['Resumen']) + 2
+        output['Movimientos'].to_excel(writer, sheet_name='Resumen', startrow=startrow_movimiento, index=False)
+        output['Cuotas'].to_excel(writer, sheet_name='Cuotas', startrow=0, index=False)
+
+    return output
+
