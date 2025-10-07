@@ -112,8 +112,12 @@ def main():
                     with pd.ExcelWriter(output, engine='openpyxl') as writer:
                         if isinstance(df_result, dict):
                             for sheet_name, df in df_result.items():
+                                df.index.name = None  # Eliminar nombre del índice
+                                df = df.reset_index(drop=True)  # Eliminar columna de índice
                                 df.to_excel(writer, sheet_name=sheet_name, index=False)
                         else:
+                            df_result.index.name = None
+                            df_result = df_result.reset_index(drop=True)
                             df_result.to_excel(writer, index=False)
                     
                     progress_bar.progress(100)
