@@ -2,6 +2,7 @@ import pdfplumber
 import pandas as pd
 import re
 import os
+from io import BytesIO
 
 def split_transaction(transaction_string):
     pattern = r'(\d{1,2}\w{3})\s+(\d{1,2}\w{3})\s+(.+?)\s+([\d,\.]+-?)$'
@@ -30,9 +31,22 @@ def extraer_montos(text):
     montos = re.findall(pattern, text_clean)
     return montos
 
-def procesar_movimientos(pdf_path):
+def abrir_pdf(pdf_input):
+    """
+    Abre el PDF desde una ruta o desde un objeto bytes/file-like.
+    """
+    if isinstance(pdf_input, (str, os.PathLike)):
+        return pdfplumber.open(pdf_input)
+    elif isinstance(pdf_input, bytes):
+        return pdfplumber.open(BytesIO(pdf_input))
+    elif hasattr(pdf_input, 'read'):
+        return pdfplumber.open(pdf_input)
+    else:
+        raise ValueError("pdf_input debe ser una ruta, bytes o file-like object.")
+
+def procesar_movimientos(pdf_input):
     transactions = []
-    with pdfplumber.open(pdf_path) as pdf:
+    with abrir_pdf(pdf_input) as pdf:
         for page in pdf.pages:
             pg = str(page.page_number)
             text = page.extract_text()
@@ -130,9 +144,9 @@ def procesar_movimientos(pdf_path):
     df_movimientos = df[base_movimiento]
     return df_movimientos
 
-def procesar_cuotas(pdf_path, df_mov):
+def procesar_cuotas(pdf_input, df_mov):
     transactions = []
-    with pdfplumber.open(pdf_path) as pdf:
+    with abrir_pdf(pdf_input) as pdf:
         for page in pdf.pages:
             pg = str(page.page_number)
             text = page.extract_text()
@@ -194,10 +208,27 @@ def procesar_cuotas(pdf_path, df_mov):
     df_cuotas.rename(columns={'TEA': 'TEA%'}, inplace=True)
     return df_cuotas
 
-def procesar_documento(pdf_path):
+def procesar_documento(pdf_input):
     """
-    Procesa el documento PDF y retorna los DataFrames de movimientos y cuotas.
+    Procesa el documento PDF y retorna un diccionario con DataFrames de resumen y cuotas.
     """
-    df_movimientos = procesar_movimientos(pdf_path)
-    df_cuotas = procesar_cuotas(pdf_path, df_movimientos)
-    return df_movimientos, df_cuotas
+    df_movimientos = procesar_movimientos(pdf_input)
+    df_cuotas = procesar_cuotas(pdf_input, df_movimientos)
+
+    # Crear resumen tipo Excel: encabezado + filas de movimientos
+    resumen_rows = [df_movimientos.columns.tolist()] + df_movimientos.astype(str).values.tolist()
+    movimientos_rows = [df_cuotas.columns.tolist()] + df_cuotas.astype(str).values.tolist()
+
+    # Insertar una fila vacía entre ambos bloques
+    combined_rows = resumen_rows + [[""] * len(resumen_rows[0])] + movimientos_rows
+
+    # Rellenar columnas si es necesario
+    max_cols = max(len(row) for row in combined_rows)
+    combined_rows = [row + [""] * (max_cols - len(row)) for row in combined_rows]
+    df_resumen_completo = pd.DataFrame(combined_rows)
+
+    output = {
+        'Resumen': df_resumen_completo,
+        'Cuotas': df_cuotas.reset_index(drop=True)
+    }
+    return output
