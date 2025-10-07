@@ -88,8 +88,13 @@ def procesar_documento(pdf_bytes):
         'Página', 'Fecha Consumo', 'Descripción', 'Monto Soles', 'Monto USD'
     ])
 
+    # Unir info_general y movimientos en una sola hoja 'Resumen'
+    resumen = info_general.copy()
+    for idx, row in monto.iterrows():
+        for col in monto.columns:
+            resumen.at[0, f'{col}_{idx+1}'] = row[col]
+
     output = {
-        'Resumen': info_general.reset_index(drop=True),
-        'Movimientos': monto.reset_index(drop=True)
+        'Resumen': resumen.reset_index(drop=True)
     }
     return output
