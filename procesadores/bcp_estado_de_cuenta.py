@@ -193,3 +193,11 @@ def procesar_cuotas(pdf_path, df_mov):
     df_cuotas = dfw[base_cuotas]
     df_cuotas.rename(columns={'TEA': 'TEA%'}, inplace=True)
     return df_cuotas
+
+def procesar_documento(pdf_path):
+    """
+    Procesa el documento PDF y retorna los DataFrames de movimientos y cuotas.
+    """
+    df_movimientos = procesar_movimientos(pdf_path)
+    df_cuotas = procesar_cuotas(pdf_path, df_movimientos)
+    return df_movimientos, df_cuotas
