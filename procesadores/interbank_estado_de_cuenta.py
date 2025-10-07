@@ -88,13 +88,17 @@ def procesar_documento(pdf_bytes):
         'Página', 'Fecha Consumo', 'Descripción', 'Monto Soles', 'Monto USD'
     ])
 
-    # Unir info_general y movimientos en una sola hoja 'Resumen'
-    resumen = info_general.copy()
-    for idx, row in monto.iterrows():
-        for col in monto.columns:
-            resumen.at[0, f'{col}_{idx+1}'] = row[col]
+    # Unir info_general y movimientos en una sola hoja 'Resumen' con una fila vacía entre ambos
+    resumen_rows = info_general.values.tolist()
+    movimientos_rows = monto.values.tolist()
+    # Insertar una fila vacía entre ambos bloques
+    combined_rows = resumen_rows + [[""] * len(resumen_rows[0])] + movimientos_rows
+    # Crear un DataFrame combinado (rellenando columnas si es necesario)
+    max_cols = max(len(row) for row in combined_rows)
+    combined_rows = [row + [""] * (max_cols - len(row)) for row in combined_rows]
+    df_resumen_completo = pd.DataFrame(combined_rows)
 
     output = {
-        'Resumen': resumen.reset_index(drop=True)
+        'Resumen': df_resumen_completo
     }
     return output
