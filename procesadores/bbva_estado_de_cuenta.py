@@ -206,20 +206,23 @@ def procesar_documento(pdf_bytes):
     df_cuotas[["Número de cuota", "Tasa de cuota"]] = df_cuotas.apply(separar_cuota_y_tasa, axis=1)
     df_cuotas["Tasa de cuota"] = df_cuotas["Tasa de cuota"].str.replace("%%", "%", regex=False)
 
-    # Output igual al notebook: sin fila en blanco, columnas ordenadas
+    # Unir df_general y df_montos en una sola página tipo Excel
+    # Convertir ambos DataFrames a listas de filas
+    resumen_rows = [df_general.columns.tolist()] + df_general.astype(str).values.tolist()
+    movimientos_rows = [df_montos.columns.tolist()] + df_montos.astype(str).values.tolist()
+
+    # Insertar una fila vacía entre ambos bloques
+    combined_rows = resumen_rows + [[""] * len(resumen_rows[0])] + movimientos_rows
+
+    # Crear un DataFrame combinado (rellenando columnas si es necesario)
+    max_cols = max(len(row) for row in combined_rows)
+    combined_rows = [row + [""] * (max_cols - len(row)) for row in combined_rows]
+    df_resumen_completo = pd.DataFrame(combined_rows)
+
     output = {
-        'Resumen': df_general.reset_index(drop=True),
-        'Movimientos': df_montos.reset_index(drop=True),
+        'Resumen': df_resumen_completo,
         'Cuotas': df_cuotas.reset_index(drop=True)
     }
-
-    # Guardar los DataFrames en un archivo Excel con los movimientos debajo del resumen en la misma hoja
-    ruta_excel = r"C:\Users\jdelgado\Desktop\python\estadoBBVA.xlsx"
-    with pd.ExcelWriter(ruta_excel, engine='openpyxl') as writer:
-        output['Resumen'].to_excel(writer, sheet_name='Resumen', startrow=0, index=False)
-        startrow_movimiento = len(output['Resumen']) + 2
-        output['Movimientos'].to_excel(writer, sheet_name='Resumen', startrow=startrow_movimiento, index=False)
-        output['Cuotas'].to_excel(writer, sheet_name='Cuotas', startrow=0, index=False)
 
     return output
 
