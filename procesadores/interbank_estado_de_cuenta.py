@@ -89,7 +89,7 @@ def procesar_documento(pdf_bytes):
     ])
 
     output = {
-        'Resumen': info_general.reset_index(drop=True).to_dict(orient='records'),
-        'Movimientos': monto.reset_index(drop=True).to_dict(orient='records')
+        'Resumen': info_general.reset_index(drop=True),
+        'Movimientos': monto.reset_index(drop=True)
     }
     return output
