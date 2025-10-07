@@ -228,7 +228,7 @@ def procesar_documento(pdf_input):
     df_resumen_completo = pd.DataFrame(combined_rows)
 
     output = {
-        'Resumen': df_resumen_completo.reset_index(drop=True),
+        'Resumen': df_resumen_completo,  # <-- No uses .reset_index(drop=True)
         'Cuotas': df_cuotas.reset_index(drop=True)
     }
     return output
