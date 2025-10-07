@@ -219,15 +219,9 @@ def procesar_documento(pdf_bytes):
     combined_rows = [row + [""] * (max_cols - len(row)) for row in combined_rows]
     df_resumen_completo = pd.DataFrame(combined_rows)
 
-    # Eliminar nombre de índice y resetear índice para evitar columna extra en Excel
-    df_resumen_completo.index.name = None
-    df_resumen_completo = df_resumen_completo.reset_index(drop=True)
-    df_cuotas.index.name = None
-    df_cuotas = df_cuotas.reset_index(drop=True)
-
     output = {
-        'Resumen': df_resumen_completo,
-        'Cuotas': df_cuotas
+        'Resumen': df_resumen_completo.reset_index(drop=True),
+        'Cuotas': df_cuotas.reset_index(drop=True)
     }
 
     return output
