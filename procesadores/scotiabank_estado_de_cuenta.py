@@ -222,7 +222,7 @@ def procesar_documento(pdf_bytes):
     # Insertar una fila vacía entre ambos bloques
     combined_rows = resumen_rows + [[""] * len(resumen_rows[0])] + movimientos_rows
 
-    # Crear un DataFrame combinado (rellenando columnas si es necesario)
+    # Crear un DataFrame combinado 
     max_cols = max(len(row) for row in combined_rows)
     combined_rows = [row + [""] * (max_cols - len(row)) for row in combined_rows]
     df_resumen_completo = pd.DataFrame(combined_rows)
