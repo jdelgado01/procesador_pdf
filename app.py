@@ -29,16 +29,13 @@ st.markdown("""
 ENTIDADES = {
     "BCP": ["Prestamo", "Estado de cuenta"],
     "INTERBANK": ["Prestamo", "Estado de cuenta"],
-    "PICHINCHA": ["Prestamo", "Estado de cuenta"],
+    "PICHINCHA": ["Prestamo"],
     "SCOTIABANK": ["Prestamo", "Estado de cuenta"],
     "BBVA": ["Prestamo", "Estado de cuenta"],
     "RIPLEY": ["Estado de cuenta"],
     "FALABELLA": ["Estado de cuenta"],
     "DINNERS": ["Estado de cuenta"],
-    "COMPARTAMOS": ["Prestamo"],
-    "GNB": ["Prestamo"],
-    "ALFIN BANCO": ["Prestamo"],
-    "MIBANCO": ["Prestamo"]
+
 }
 
 def main():

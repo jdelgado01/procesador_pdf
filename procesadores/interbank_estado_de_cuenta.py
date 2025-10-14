@@ -84,21 +84,10 @@ def procesar_documento(pdf_bytes):
                     monto_usd = match1.group(4)
                     data.append([pg, fecha, comercio, monto_soles, monto_usd])
 
-    monto = pd.DataFrame(data, columns=[
-        'Página', 'Fecha Consumo', 'Descripción', 'Monto Soles', 'Monto USD'
-    ])
-
-    # Unir info_general y movimientos en una sola hoja 'Resumen' con una fila vacía entre ambos
-    resumen_rows = info_general.values.tolist()
-    movimientos_rows = monto.values.tolist()
-    # Insertar una fila vacía entre ambos bloques
-    combined_rows = resumen_rows + [[""] * len(resumen_rows[0])] + movimientos_rows
-    # Crear un DataFrame combinado (rellenando columnas si es necesario)
-    max_cols = max(len(row) for row in combined_rows)
-    combined_rows = [row + [""] * (max_cols - len(row)) for row in combined_rows]
-    df_resumen_completo = pd.DataFrame(combined_rows)
+    monto = pd.DataFrame(data, columns=['Página', 'Fecha Consumo', 'Descripción', 'Monto Soles', 'Monto USD'])
 
     output = {
-        'Resumen': df_resumen_completo
+        'Resumen': info_general.reset_index(drop=True),
+        'Movimientos': monto.reset_index(drop=True)
     }
     return output
