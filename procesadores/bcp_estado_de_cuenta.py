@@ -218,8 +218,6 @@ def procesar_documento(pdf_input):
     # Crear resumen tipo Excel: encabezado + filas de movimientos
     resumen_rows = [df_movimientos.columns.tolist()] + df_movimientos.astype(str).values.tolist()
     movimientos_rows = [df_cuotas.columns.tolist()] + df_cuotas.astype(str).values.tolist()
-
-    # Insertar una fila vacía entre ambos bloques
     combined_rows = resumen_rows + [[""] * len(resumen_rows[0])] + movimientos_rows
 
     # Rellenar columnas si es necesario
