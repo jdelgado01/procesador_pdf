@@ -214,14 +214,21 @@ def procesar_documento(pdf_bytes):
         ]
     )
 
-    df_resumen = pd.concat([
-        df_general.reset_index(drop=True),
-        pd.DataFrame([[""] * len(df_general.columns)]),  # Fila vacía
-        df_movimientos.reset_index(drop=True)
-    ], ignore_index=True)
+    # Unir df_general y df_movimientos en una sola página tipo Excel
+    # Convertir ambos DataFrames a listas de filas
+    resumen_rows = [df_general.columns.tolist()] + df_general.astype(str).values.tolist()
+    movimientos_rows = [df_movimientos.columns.tolist()] + df_movimientos.astype(str).values.tolist()
+
+    # Insertar una fila vacía entre ambos bloques
+    combined_rows = resumen_rows + [[""] * len(resumen_rows[0])] + movimientos_rows
+
+    # Crear un DataFrame combinado (rellenando columnas si es necesario)
+    max_cols = max(len(row) for row in combined_rows)
+    combined_rows = [row + [""] * (max_cols - len(row)) for row in combined_rows]
+    df_resumen_completo = pd.DataFrame(combined_rows)
 
     output = {
-        'Resumen': df_resumen,
+        'Resumen': df_resumen_completo.reset_index(drop=True),
         'Cuotas': df_cuotas.reset_index(drop=True)
     }
     return output
