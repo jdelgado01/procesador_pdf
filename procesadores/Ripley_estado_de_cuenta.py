@@ -13,7 +13,7 @@ def procesar_documento(pdf_bytes):
     """
     pdf_stream = io.BytesIO(pdf_bytes)
 
-    # INFORMACIÓN GENERAL
+    # INFORMACIÓN GENERAL-
     full_text = ""
     with pdfplumber.open(pdf_stream) as pdf:
         for page in pdf.pages:

@@ -5,13 +5,7 @@ import io
 from datetime import datetime
 
 def procesar_documento(pdf_bytes):
-    """
-    Procesa un archivo PDF de estado de cuenta Falabella.
-    Args:
-        pdf_bytes: Bytes del archivo PDF
-    Returns:
-        dict: Diccionario con DataFrames de información general, movimientos y cuotas
-    """
+   
     pdf_stream = io.BytesIO(pdf_bytes)
     full_text = ""
     page_texts = []

@@ -62,7 +62,7 @@ def procesar_documento(pdf_bytes):
                  'Pago Total Soles','Pago Total USD','Pago Minimo Soles','Pago Minimo USD']
     )
 
-    # --- MOVIMIENTOS ---
+    # --- MOVIMIENTOS 
     def _to_float(txt):
         if not txt:
             return None

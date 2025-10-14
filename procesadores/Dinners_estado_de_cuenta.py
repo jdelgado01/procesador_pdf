@@ -6,7 +6,7 @@ import numpy as np
 import io
 from collections import defaultdict
 
-
+# --- INFORMACIÓN GENERAL ---
 def extract_multi_ec(pdf_stream, drop_if_no_name=True):
     def _norm(s):
         s = unicodedata.normalize("NFD", s)
