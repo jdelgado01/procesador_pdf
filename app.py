@@ -109,11 +109,15 @@ def main():
                     with pd.ExcelWriter(output, engine='openpyxl') as writer:
                         if isinstance(df_result, dict):
                             for sheet_name, df in df_result.items():
-                                # Asegurarse de que no haya índices
+                                # Asegurarse de que no haya índices y que sea DataFrame
+                                if not isinstance(df, pd.DataFrame):
+                                    df = pd.DataFrame(df)
                                 df = df.reset_index(drop=True)
                                 df.to_excel(writer, sheet_name=sheet_name, index=False, header=True)
                         else:
-                            # Asegurarse de que no haya índices
+                            # Asegurarse de que no haya índices y que sea DataFrame
+                            if not isinstance(df_result, pd.DataFrame):
+                                df_result = pd.DataFrame(df_result)
                             df_result = df_result.reset_index(drop=True)
                             df_result.to_excel(writer, index=False, header=True)
                     
