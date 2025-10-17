@@ -109,13 +109,13 @@ def main():
                     with pd.ExcelWriter(output, engine='openpyxl') as writer:
                         if isinstance(df_result, dict):
                             for sheet_name, df in df_result.items():
-                                # Resetear el índice antes de exportar
-                                df_reset = df.reset_index(drop=True)
-                                df_reset.to_excel(writer, sheet_name=sheet_name, index=False)
+                                # Asegurarse de que no haya índices
+                                df = df.reset_index(drop=True)
+                                df.to_excel(writer, sheet_name=sheet_name, index=False, header=True)
                         else:
-                            # Resetear el índice antes de exportar
-                            df_result_reset = df_result.reset_index(drop=True)
-                            df_result_reset.to_excel(writer, index=False)
+                            # Asegurarse de que no haya índices
+                            df_result = df_result.reset_index(drop=True)
+                            df_result.to_excel(writer, index=False, header=True)
                     
                     progress_bar.progress(100)
                     status_text.text("¡Proceso completado!")
