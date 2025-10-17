@@ -104,60 +104,18 @@ def main():
                     progress_bar.progress(70)
                     status_text.text("Generando archivo Excel...")
                     
-                    # Código de debug para verificar el DataFrame
-                    st.write("Preview del DataFrame antes de exportar:")
-                    if isinstance(df_result, dict):
-                        for sheet_name, df in df_result.items():
-                            st.write(f"Hoja: {sheet_name}")
-                            st.write(df.head())
-                    else:
-                        st.write(df_result.head())
-                    
                     # Generar Excel en memoria
                     output = io.BytesIO()
                     with pd.ExcelWriter(output, engine='openpyxl') as writer:
                         if isinstance(df_result, dict):
                             for sheet_name, df in df_result.items():
-                                # Convertir a DataFrame si no lo es
-                                if not isinstance(df, pd.DataFrame):
-                                    df = pd.DataFrame(df)
-                                
-                                # Limpiar cualquier índice existente
-                                df.columns = df.columns.astype(str)
-                                df = df.copy()
-                                
-                                # Asegurarse de que no haya índices
-                                if df.index.name:
-                                    df = df.reset_index(drop=True)
-                                
-                                # Escribir al Excel sin índice
-                                df.to_excel(
-                                    writer, 
-                                    sheet_name=sheet_name, 
-                                    index=False,
-                                    header=True,
-                                    float_format="%.2f"
-                                )
+                                # Resetear el índice antes de exportar
+                                df_reset = df.reset_index(drop=True)
+                                df_reset.to_excel(writer, sheet_name=sheet_name, index=False)
                         else:
-                            # Convertir a DataFrame si no lo es
-                            if not isinstance(df_result, pd.DataFrame):
-                                df_result = pd.DataFrame(df_result)
-                            
-                            # Limpiar cualquier índice existente
-                            df_result.columns = df_result.columns.astype(str)
-                            df_result = df_result.copy()
-                            
-                            # Asegurarse de que no haya índices
-                            if df_result.index.name:
-                                df_result = df_result.reset_index(drop=True)
-                            
-                            # Escribir al Excel sin índice
-                            df_result.to_excel(
-                                writer, 
-                                index=False,
-                                header=True,
-                                float_format="%.2f"
-                            )
+                            # Resetear el índice antes de exportar
+                            df_result_reset = df_result.reset_index(drop=True)
+                            df_result_reset.to_excel(writer, index=False)
                     
                     progress_bar.progress(100)
                     status_text.text("¡Proceso completado!")
