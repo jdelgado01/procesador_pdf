@@ -198,10 +198,11 @@ def procesar_cuotas(pdf_input, df_mov):
             return pd.to_datetime(f"{fecha_str}{año}", format="%d%b%Y", errors='coerce')
         except:
             return pd.NaT
+    
     dfw['Fecha de Proceso'] = dfw.apply(lambda row: convertir_fecha(row['Fecha de Proceso'], str(row['Fin ciclo facturación'])), axis=1)
     dfw['Fecha de Consumo'] = dfw.apply(lambda row: convertir_fecha(row['Fecha de Consumo'], str(row['Fin ciclo facturación'])), axis=1)
-    dfw['Fecha de Proceso'] = dfw['Fecha de Proceso'].dt.date
-    dfw['Fecha de Consumo'] = dfw['Fecha de Consumo'].dt.date
+    dfw['Fecha de Proceso'] = pd.to_datetime(dfw['Fecha de Proceso'], errors='coerce')
+    dfw['Fecha de Consumo'] = pd.to_datetime(dfw['Fecha de Consumo'], errors='coerce')
     base_cuotas = [ 'Pagina', 'Fecha de Proceso', 'Fecha de Consumo', 'plan cuotas SOLES', 'Descripción', 'Compras' ,'NroCuota','TEA',
                    'capital','intereses', 'total']
     df_cuotas = dfw[base_cuotas]
